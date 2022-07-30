@@ -2,25 +2,23 @@
 #include <MFRC522.h>
 #include <MFRC522Hack.h>
 
-constexpr uint8_t RST_PIN = 9;     // Configurable, see typical pin layout above
-constexpr uint8_t SS_PIN = 10;     // Configurable, see typical pin layout above
+constexpr uint8_t RST_PIN = 9;
+constexpr uint8_t SS_PIN = 10;
 
-MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance.
-MFRC522Hack mfrc522Hack(&mfrc522);  // Create MFRC522Hack instance.
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+MFRC522Hack mfrc522Hack(&mfrc522);
 
-/* Set your new UID here! */
-byte newUid[] = {0x05, 0x5E, 0xD3, 0x47};
+/* Set new UID here! */
+byte newUid[] = {0x00, 0x00, 0x00, 0x00};
 
 MFRC522::MIFARE_Key key;
 
 void setup() {
-  Serial.begin(9600);  // Initialize serial communications with the PC
-  while (!Serial);     // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
-  SPI.begin();         // Init SPI bus
-  mfrc522.PCD_Init();  // Init MFRC522 card
+  Serial.begin(9600);
+  while (!Serial);
+  SPI.begin();
+  mfrc522.PCD_Init();
   Serial.println(F("Program Started"));
-  
-  // Prepare key - all keys are set to FFFFFFFFFFFFh at chip delivery from the factory.
   for (byte i = 0; i < 6; i++) {
     key.keyByte[i] = 0xFF;
   }
@@ -29,7 +27,6 @@ void setup() {
 }
 
 void loop() {
-  // Look for new cards, and select one if present
   if ( ! mfrc522.PICC_IsNewCardPresent() || ! mfrc522.PICC_ReadCardSerial() ) {
     delay(50);
     return;
@@ -45,8 +42,7 @@ void loop() {
   if ( mfrc522Hack.MIFARE_SetUid(newUid, (byte)4, true) ) {
     Serial.println(F("已設定新的UID"));
   }
-  
-  // Halt PICC and re-select it so DumpToSerial doesn't get confused
+
   mfrc522.PICC_HaltA();
   if ( ! mfrc522.PICC_IsNewCardPresent() || ! mfrc522.PICC_ReadCardSerial() ) {
     return;
