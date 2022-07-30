@@ -2,44 +2,33 @@
 #include <MFRC522.h>
 
 #define RST_PIN         9          
-#define SS_PIN          10  //就是模組上的SDA接腳
+#define SS_PIN          10
 
-
-MFRC522 mfrc522;   // 建立MFRC522實體
+MFRC522 mfrc522;
 
 void setup() {
-
   Serial.begin(9600); 
-
-  SPI.begin();        // 初始化SPI介面
-
-  mfrc522.PCD_Init(SS_PIN, RST_PIN); // 初始化MFRC522卡
+  SPI.begin();
+  mfrc522.PCD_Init(SS_PIN, RST_PIN);
   Serial.print(F("Reader "));
   Serial.print(F(": "));
-  mfrc522.PCD_DumpVersionToSerial(); // 顯示讀卡設備的版本
-  
+  mfrc522.PCD_DumpVersionToSerial();
 }
 
 
 void loop() {
-
-  // 檢查是不是一張新的卡
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
-      // 顯示卡片內容
       Serial.print(F("Card UID:"));
-      dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size); // 顯示卡片的UID
+      dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
       Serial.println();
       Serial.print(F("PICC type: "));
       MFRC522::PICC_Type piccType = mfrc522.PICC_GetType(mfrc522.uid.sak);
-      Serial.println(mfrc522.PICC_GetTypeName(piccType));  //顯示卡片的類型
+      Serial.println(mfrc522.PICC_GetTypeName(piccType));
 
-      mfrc522.PICC_HaltA();  // 卡片進入停止模式
+      mfrc522.PICC_HaltA();
     }
 }
 
-/**
- * 這個副程式把讀取到的UID，用16進位顯示出來
- */
 void dump_byte_array(byte *buffer, byte bufferSize) {
   for (byte i = 0; i < bufferSize; i++) {
     Serial.print(buffer[i] < 0x10 ? " 0" : " ");
