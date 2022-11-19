@@ -8,7 +8,6 @@ constexpr uint8_t SS_PIN = 10;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522Hack mfrc522Hack(&mfrc522);
 
-/* Set new UID here! */
 byte newUid[] = {0x00, 0x00, 0x00, 0x00};
 
 MFRC522::MIFARE_Key key;
